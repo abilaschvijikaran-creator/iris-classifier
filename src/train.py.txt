@@ -1,0 +1,45 @@
+import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix
+import os
+
+# Load dataset
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+# Split dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train model
+clf = DecisionTreeClassifier()
+clf.fit(X_train, y_train)
+
+# Make predictions
+y_pred = clf.predict(X_test)
+
+# Create confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+
+# Save outputs folder if not exists
+os.makedirs("outputs", exist_ok=True)
+
+# Save confusion matrix image
+plt.figure(figsize=(6, 4))
+sns.heatmap(cm, annot=True, cmap="Blues", fmt="d")
+plt.title("Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.savefig("outputs/confusion_matrix.png")
+plt.close()
+
+# Save model
+joblib.dump(clf, "outputs/iris_model.joblib")
+
+print("Training complete! Files saved in /outputs")
